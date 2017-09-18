@@ -211,6 +211,19 @@ angular.module("ovh-api-services").service("OvhApiCloudDb", ["$injector", functi
     };
 }]);
 
+angular.module("ovh-api-services").service("OvhApiCloudDbStdInstance", ["$injector", function ($injector) {
+    "use strict";
+
+    return {
+        Lexi: function () {
+            return $injector.get("OvhApiCloudDbStdInstanceLexi");
+        },
+        WhiteList: function () {
+            return $injector.get("OvhApiCloudDbStdInstanceWhiteList");
+        }
+    };
+}]);
+
 angular.module("ovh-api-services").service("OvhApiCloudDbStdInstanceLexi", ["$resource", "$cacheFactory", function ($resource, $cacheFactory) {
     "use strict";
 
@@ -255,15 +268,103 @@ angular.module("ovh-api-services").service("OvhApiCloudDbStdInstanceLexi", ["$re
     return resource;
 }]);
 
-angular.module("ovh-api-services").service("OvhApiCloudDbStdInstance", ["$injector", function ($injector) {
+angular.module("ovh-api-services").service("OvhApiCloudDbStdInstanceDatabase", ["$injector", function ($injector) {
     "use strict";
 
     return {
         Lexi: function () {
-            return $injector.get("OvhApiCloudDbStdInstanceLexi");
-        },
-        WhiteList: function () {
-            return $injector.get("OvhApiCloudDbStdInstanceWhiteList");
+            return $injector.get("OvhApiCloudDbStdInstanceDatabaseLexi");
+        }
+    };
+}]);
+
+angular.module("ovh-api-services").service("OvhApiCloudDbStdInstanceDatabaseLexi", ["$resource", "$cacheFactory", function ($resource, $cacheFactory) {
+    "use strict";
+
+    var cache = $cacheFactory("OvhApiCloudDbStdInstanceDatabaseLexi");
+    var queryCache = $cacheFactory("OvhApiCloudDbStdInstanceDatabaseLexiQuery");
+    var interceptor = {
+        response: function (response) {
+            cache.removeAll();
+            queryCache.removeAll();
+            return response.data;
+        }
+    };
+
+    var resource = $resource("/cloudDB/:projectId/standard/instance/:instanceId/database/:databaseId", {
+        projectId: "@projectId",
+        instanceId: "@instanceId",
+        databaseId: "@databaseId"
+    }, {
+        query: { method: "GET", isArray: true },
+        get: { method: "GET", cache: cache },
+        post: { method: "POST", interceptor: interceptor },
+        remove: { method: "DELETE", interceptor: interceptor }
+    });
+
+    resource.resetCache = function () {
+        cache.removeAll();
+    };
+
+    resource.resetQueryCache = function () {
+        queryCache.removeAll();
+    };
+
+    return resource;
+}]);
+
+angular.module("ovh-api-services").service("OvhApiCloudDbStdInstanceUser", ["$injector", function ($injector) {
+    "use strict";
+
+    return {
+        Lexi: function () {
+            return $injector.get("OvhApiCloudDbStdInstanceUserLexi");
+        }
+    };
+}]);
+
+angular.module("ovh-api-services").service("OvhApiCloudDbStdInstanceUserLexi", ["$resource", "$cacheFactory", function ($resource, $cacheFactory) {
+    "use strict";
+
+    var cache = $cacheFactory("OvhApiCloudDbStdInstanceUserLexi");
+    var queryCache = $cacheFactory("OvhApiCloudDbStdInstanceUserLexiQuery");
+    var interceptor = {
+        response: function (response) {
+            cache.removeAll();
+            queryCache.removeAll();
+            return response.data;
+        }
+    };
+
+    var resource = $resource("/cloudDB/:projectId/standard/instance/:instanceId/user/:userId", {
+        projectId: "@projectId",
+        instanceId: "@instanceId",
+        userId: "@userId"
+    }, {
+        query: { method: "GET", isArray: true },
+        get: { method: "GET", cache: cache },
+        edit: { method: "PUT", interceptor: interceptor },
+        post: { method: "POST", interceptor: interceptor },
+        remove: { method: "DELETE", interceptor: interceptor }
+    });
+
+    resource.resetCache = function () {
+        cache.removeAll();
+    };
+
+    resource.resetQueryCache = function () {
+        queryCache.removeAll();
+    };
+
+    return resource;
+}]);
+
+angular.module("ovh-api-services").service("OvhApiCloudDbStdInstanceWhiteList", ["$injector", function ($injector) {
+    "use strict";
+
+    return {
+        Lexi: function () {
+            return $injector.get("OvhApiCloudDbStdInstanceWhiteListLexi");
         }
     };
 }]);
@@ -302,16 +403,6 @@ angular.module("ovh-api-services").service("OvhApiCloudDbStdInstanceWhiteListLex
     };
 
     return resource;
-}]);
-
-angular.module("ovh-api-services").service("OvhApiCloudDbStdInstanceWhiteList", ["$injector", function ($injector) {
-    "use strict";
-
-    return {
-        Lexi: function () {
-            return $injector.get("OvhApiCloudDbStdInstanceWhiteListLexi");
-        }
-    };
 }]);
 
 angular.module("ovh-api-services").service("OvhApiCloudAapi", ["$resource", "$cacheFactory", function ($resource, $cacheFactory) {

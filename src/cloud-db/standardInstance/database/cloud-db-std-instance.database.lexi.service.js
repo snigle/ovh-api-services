@@ -1,8 +1,8 @@
-angular.module("ovh-api-services").service("OvhApiCloudDbStdInstanceWhiteListLexi", function ($resource, $cacheFactory) {
+angular.module("ovh-api-services").service("OvhApiCloudDbStdInstanceDatabaseLexi", function ($resource, $cacheFactory) {
     "use strict";
 
-    var cache = $cacheFactory("OvhApiCloudDbStdInstanceWhiteListLexi");
-    var queryCache = $cacheFactory("OvhApiCloudDbStdInstanceWhiteListLexiQuery");
+    var cache = $cacheFactory("OvhApiCloudDbStdInstanceDatabaseLexi");
+    var queryCache = $cacheFactory("OvhApiCloudDbStdInstanceDatabaseLexiQuery");
     var interceptor = {
         response: function (response) {
             cache.removeAll();
@@ -11,14 +11,13 @@ angular.module("ovh-api-services").service("OvhApiCloudDbStdInstanceWhiteListLex
         }
     };
 
-    var resource = $resource("/cloudDB/:projectId/standard/instance/:instanceId/whitelist/:networkId", {
+    var resource = $resource("/cloudDB/:projectId/standard/instance/:instanceId/database/:databaseId", {
         projectId: "@projectId",
         instanceId: "@instanceId",
-        networkId: "@networkId"
+        databaseId: "@databaseId"
     }, {
         query: { method: "GET", isArray: true },
         get: { method: "GET", cache: cache },
-        edit: { method: "PUT", interceptor: interceptor },
         post: { method: "POST", interceptor: interceptor },
         remove: { method: "DELETE", interceptor: interceptor }
     });
