@@ -19,6 +19,12 @@ angular.module("ovh-api-services").service("OvhApiCloudDbStdInstanceUserLexi", f
         query: { method: "GET", isArray: true },
         get: { method: "GET", cache: cache },
         post: { method: "POST", interceptor: interceptor },
+        changePassword: {
+            url: "/cloudDB/:projectId/standard/instance/:instanceId/user/:userId/changePassword",
+            method: "POST",
+            cache: cache,
+            interceptor: interceptor
+        },
         remove: { method: "DELETE", interceptor: interceptor }
     });
 

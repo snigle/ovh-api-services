@@ -205,10 +205,56 @@ angular.module("ovh-api-services").service("OvhApiCloudDb", ["$injector", functi
         Lexi: function () {
             return $injector.get("OvhApiCloudDbLexi");
         },
+        Dump: function () {
+            return $injector.get("OvhApiCloudDbDump");
+        },
         StandardInstance: function () {
             return $injector.get("OvhApiCloudDbStdInstance");
         }
     };
+}]);
+
+angular.module("ovh-api-services").service("OvhApiCloudDbDump", ["$injector", function ($injector) {
+    "use strict";
+
+    return {
+        Lexi: function () {
+            return $injector.get("OvhApiCloudDbDumpLexi");
+        }
+    };
+}]);
+
+angular.module("ovh-api-services").service("OvhApiCloudDbDumpLexi", ["$resource", "$cacheFactory", function ($resource, $cacheFactory) {
+    "use strict";
+
+    var cache = $cacheFactory("OvhApiCloudDbDumpLexi");
+    var queryCache = $cacheFactory("OvhApiCloudDbDumpLexiQuery");
+    var interceptor = {
+        response: function (response) {
+            cache.removeAll();
+            queryCache.removeAll();
+            return response.data;
+        }
+    };
+
+    var resource = $resource("/cloudDB/:projectId/dump/:dumpId", {
+        projectId: "@projectId",
+        dumpId: "@dumpId"
+    }, {
+        query: { method: "GET", isArray: true },
+        get: { method: "GET", cache: cache },
+        remove: { method: "DELETE", interceptor: interceptor }
+    });
+
+    resource.resetCache = function () {
+        cache.removeAll();
+    };
+
+    resource.resetQueryCache = function () {
+        queryCache.removeAll();
+    };
+
+    return resource;
 }]);
 
 angular.module("ovh-api-services").service("OvhApiCloudDbStdInstance", ["$injector", function ($injector) {
@@ -299,7 +345,13 @@ angular.module("ovh-api-services").service("OvhApiCloudDbStdInstanceDatabaseLexi
         query: { method: "GET", isArray: true },
         get: { method: "GET", cache: cache },
         post: { method: "POST", interceptor: interceptor },
-        remove: { method: "DELETE", interceptor: interceptor }
+        remove: { method: "DELETE", interceptor: interceptor },
+        createDump: {
+            url: "/cloudDB/:projectId/standard/instance/:instanceId/database/:databaseId/dump",
+            method: "POST",
+            cache: cache,
+            interceptor: interceptor
+        }
     });
 
     resource.resetCache = function () {
@@ -343,8 +395,13 @@ angular.module("ovh-api-services").service("OvhApiCloudDbStdInstanceUserLexi", [
     }, {
         query: { method: "GET", isArray: true },
         get: { method: "GET", cache: cache },
-        edit: { method: "PUT", interceptor: interceptor },
         post: { method: "POST", interceptor: interceptor },
+        changePassword: {
+            url: "/cloudDB/:projectId/standard/instance/:instanceId/user/:userId/changePassword",
+            method: "POST",
+            cache: cache,
+            interceptor: interceptor
+        },
         remove: { method: "DELETE", interceptor: interceptor }
     });
 

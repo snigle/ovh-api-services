@@ -19,7 +19,13 @@ angular.module("ovh-api-services").service("OvhApiCloudDbStdInstanceDatabaseLexi
         query: { method: "GET", isArray: true },
         get: { method: "GET", cache: cache },
         post: { method: "POST", interceptor: interceptor },
-        remove: { method: "DELETE", interceptor: interceptor }
+        remove: { method: "DELETE", interceptor: interceptor },
+        createDump: {
+            url: "/cloudDB/:projectId/standard/instance/:instanceId/database/:databaseId/dump",
+            method: "POST",
+            cache: cache,
+            interceptor: interceptor
+        }
     });
 
     resource.resetCache = function () {
